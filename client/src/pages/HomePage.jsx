@@ -1,6 +1,8 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import Loader from "../loader/Loader.jsx";
+import {Link} from "react-router-dom";
+import toast from "react-hot-toast";
 
 const HomePage = () => {
     let [Data, SetData] = useState([]);
@@ -17,13 +19,21 @@ const HomePage = () => {
     }
 
     const DeleteData = async (id) =>{
-        await axios.get(`api/delete/${id}`)
-        await ReadData();
+        // alert(id)
+        let res = await axios.get(`api/delete/${id}`)
+        if(res.data['status'] === 'Success'){
+            toast.success('Product Deleted!')
+            await ReadData();
+        }else
+        {
+            toast.error('Request Failed!')
+        }
     }
 
 
     return (
         <div className="container">
+            <Link to="/Create" className="btn btn-primary btn-sm">Create</Link>
             <div className="row">
                 <div className="col-md-12">
                     <h1>Read page</h1>
@@ -49,7 +59,7 @@ const HomePage = () => {
                                             <td>{item['discount_price']}</td>
                                             <td>
                                                 <button className="btn btn-success btn-sm w-25">Edit</button>  &nbsp;
-                                                <button className="btn btn-danger btn-sm w-25">Delete</button>
+                                                <button onClick={()=> DeleteData(item['_id'])} className="btn btn-danger btn-sm w-25">Delete</button>
                                             </td>
                                         </tr>
                                     )
